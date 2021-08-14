@@ -40,7 +40,8 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
     this.canvas.nativeElement.height = data.height;
 
     const ctx = this.canvas.nativeElement.getContext('2d')!;
-    const map = this.highQuality ? mapColors : mapColorsFast;
+    // const map = this.highQuality ? mapColors : mapColorsFast;
+    const map = mapColorsFast;
     const out = ctx.createImageData(data.width, data.height);
     map(out, data, this.lut, 1.0);
 

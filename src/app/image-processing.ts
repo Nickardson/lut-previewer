@@ -9,29 +9,76 @@ import { Observable } from "rxjs";
  */
 export function mapColorsFast(out: ImageData, image: ImageData, clut: ImageData, clutMix: number) {
   console.time('mapColorsFast');
-  let od = out.data,
-    id = image.data,
+  let outputData = out.data,
+    inputData = image.data,
     w = out.width,
     h = out.height,
-    cd = clut.data,
-    cl = Math.floor(Math.pow(clut.width, 1 / 3) + 0.001),
-    cs = cl * cl,
-    cs1 = cs - 1;
+    clutData = clut.data;
+
+  let blockWidth: number, blockHeight: number;
+  let rm: number, gm: number, bm: number;
+  let columns: number, rows: number;
+  if (clut.width === clut.height) {
+    // Handle Hald CLUT
+    blockHeight = Math.floor(Math.pow(clut.width, 1 / 3) + 0.001); // ie 8 for a 512x512
+    blockWidth = blockHeight * blockHeight; // ie 64 for a 512x512
+
+    columns = clut.width / blockWidth;
+    rows = clut.height / blockHeight;
+
+    rm = 1, gm = blockWidth, bm = blockWidth * columns * blockHeight;
+  } else {
+    // Assume a flat list?
+    blockHeight = clut.height; // ie 32 for a 1024x32
+    blockWidth = clut.width / blockHeight; // ie 32 for a 1024x32
+    columns = blockHeight;
+    rows = 1;
+
+    rm = 1, gm = clut.width, bm = blockWidth;
+  }
+
+  // Calculate volume based on block size
+  let blockPixelsCount = blockWidth * columns,
+    // TODO: is this generic for non-hald?
+    cs1 = blockWidth - 1;
+
+  console.debug(`Color mapping:`, {
+    blockWidth,
+    blockHeight,
+    columns,
+    rows,
+    blockPixelsCount,
+  });
+
+  // Is there a deterministic way of seeing what size the LUT is?
+  // cube root of (width * height) tells the dimension size of the lut
+  //   1024x32 luts are 32 size
+  //       This may be an 'unwrapped cube image 3d lut'?
+  //       image width / height = block width
+  //       height = block height
+  //   512x512 luts are 64 size
+  //       Hald CLUT
+  //       8 blocks per row, 64x8 blocks.
+  //       cuberoot(512) = 8 = block height
+  //       cuberoot(512)^2 = 64 = block width
 
   var x0 = 1 - clutMix, x1 = clutMix;
   for (var y = 0; y < h; y++) {
     for (var x = 0; x < w; x++) {
       let i = (y * w + x) * 4,
-        r = id[i] / 255 * cs1,
-        g = id[i + 1] / 255 * cs1,
-        b = id[i + 2] / 255 * cs1,
-        a = id[i + 3] / 255,
-        ci = (dither(b) * cs * cs + dither(g) * cs + dither(r)) * 4;
+        r = inputData[i] / 255 * cs1,
+        g = inputData[i + 1] / 255 * cs1,
+        b = inputData[i + 2] / 255 * cs1,
+        a = inputData[i + 3] / 255,
+        // r is on the x axis because moving right within a block makes it more red.   Advance by 1 per r
+        // g is on the y axis because moving down  within a block makes it more green. Advance by blockWidth per g
+        // b is on the block-axis because moving to the next block makes it more blue. Advance by blockWidth * columns * blockHeight per b
+        clutIndex = (dither(b) * bm + dither(g) * gm + dither(r) * rm) * 4;
 
-      od[i] = id[i] * x0 + x1 * cd[ci];
-      od[i + 1] = id[i + 1] * x0 + x1 * cd[ci + 1];
-      od[i + 2] = id[i + 2] * x0 + x1 * cd[ci + 2];
-      od[i + 3] = a * 255;
+      outputData[i] = inputData[i] * x0 + x1 * clutData[clutIndex];
+      outputData[i + 1] = inputData[i + 1] * x0 + x1 * clutData[clutIndex + 1];
+      outputData[i + 2] = inputData[i + 2] * x0 + x1 * clutData[clutIndex + 2];
+      outputData[i + 3] = a * 255;
     }
   }
   console.timeEnd('mapColorsFast');

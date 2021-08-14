@@ -15,8 +15,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     const oImg = loadImage('assets/lenna.png');
-    // const oLut = loadImage('assets/luts/32/Cinematic 02.png');
-    const oLut = loadImage('assets/luts/instant_consumer-1252696f.png');
+    const oLut = loadImage('assets/luts/32/Cinematic 02.png');
+    // const oLut = loadImage('assets/luts/instant_consumer-1252696f.png');
 
     forkJoin([oImg, oLut]).subscribe(([image, lut]) => {
       this.imageData = getImageData(image);
