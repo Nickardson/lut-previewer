@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
+import { FileHandle } from './image-drop/image-drop.component';
 import { getImageData, loadImage } from './image-processing';
 
 @Component({
@@ -21,6 +22,20 @@ export class AppComponent implements OnInit {
     forkJoin([oImg, oLut]).subscribe(([image, lut]) => {
       this.imageData = getImageData(image);
       this.lutData = getImageData(lut);
+    });
+  }
+
+  imagesDropped(files: FileHandle[]) {
+    // TODO: multiple images
+    loadImage(files[0].url).subscribe(image => {
+      this.imageData = getImageData(image);
+    });
+  }
+
+  lutsDropped(files: FileHandle[]) {
+    // TODO: multiple images
+    loadImage(files[0].url).subscribe(image => {
+      this.lutData = getImageData(image);
     });
   }
 }

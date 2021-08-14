@@ -1,1 +1,4 @@
 <app-image-processor *ngIf="imageData && lutData" [imageData]="imageData" [lut]="lutData"></app-image-processor>
+
+<app-image-drop (files)="imagesDropped($event)">Drop an image to preview</app-image-drop>
+<app-image-drop (files)="lutsDropped($event)">Drop one or more LUTs</app-image-drop>
