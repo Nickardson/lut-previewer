@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { FileHandle } from './image-drop/image-drop.component';
 import { getImageData, loadImage } from './image-processing';
+import { LutDefinition } from './lut-selector/lut-selector.component';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,8 @@ export class AppComponent implements OnInit {
 
   imageData?: ImageData;
   lutData?: ImageData;
+
+  luts: LutDefinition[] = [];
 
   ngOnInit(): void {
     const oImg = loadImage('assets/lenna.png');
@@ -33,9 +36,25 @@ export class AppComponent implements OnInit {
   }
 
   lutsDropped(files: FileHandle[]) {
-    // TODO: multiple images
-    loadImage(files[0].url).subscribe(image => {
-      this.lutData = getImageData(image);
+    files.forEach((file, i) => {
+      loadImage(file.url).subscribe(image => {
+        const name = file.file.name;
+        const existingIndex = this.luts.findIndex(lut => lut.name === name);
+        const newLut = {
+          name,
+          data: getImageData(image),
+        };
+
+        if (existingIndex === -1) {
+          this.luts.push(newLut);
+        } else {
+          this.luts[existingIndex] = newLut;
+        }
+
+        if (i === 0) {
+          this.lutData = getImageData(image);
+        }
+      });
     });
   }
 }
