@@ -10,6 +10,9 @@ export class LutSelectorComponent implements OnInit {
   @Input()
   luts: LutDefinition[] = [];
 
+  @Input()
+  image?: ImageData;
+
   @Output()
   lutSelected = new EventEmitter<LutDefinition>();
 

@@ -12,7 +12,7 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
   imageData!: ImageData;
 
   @Input()
-  lut!: ImageData;
+  lut?: ImageData;
 
   @Input()
   highQuality = false;
@@ -42,8 +42,14 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
     const ctx = this.canvas.nativeElement.getContext('2d')!;
     // const map = this.highQuality ? mapColors : mapColorsFast;
     const map = mapColorsFast;
-    const out = ctx.createImageData(data.width, data.height);
-    map(out, data, this.lut, 1.0);
+    let out: ImageData;
+
+    if (this.lut) {
+      out = ctx.createImageData(data.width, data.height);
+      map(out, data, this.lut, 1.0);
+    } else {
+      out = data;
+    }
 
     ctx.putImageData(out, 0, 0);
   }

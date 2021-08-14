@@ -14,17 +14,24 @@ export class AppComponent implements OnInit {
 
   imageData?: ImageData;
   lutData?: ImageData;
+  lutName?: string;
 
   luts: LutDefinition[] = [];
 
   ngOnInit(): void {
     const oImg = loadImage('assets/lenna.png');
-    const oLut = loadImage('assets/luts/32/Cinematic 02.png');
+    const lutName = 'Cinematic 01';
+    const oLut = loadImage('assets/luts/32/' + lutName + '.png');
     // const oLut = loadImage('assets/luts/instant_consumer-1252696f.png');
 
     forkJoin([oImg, oLut]).subscribe(([image, lut]) => {
       this.imageData = getImageData(image);
       this.lutData = getImageData(lut);
+
+      this.luts = [
+        { data: this.lutData, name: lutName },
+      ];
+      this.lutName = lutName;
     });
   }
 
@@ -38,7 +45,7 @@ export class AppComponent implements OnInit {
   lutsDropped(files: FileHandle[]) {
     files.forEach((file, i) => {
       loadImage(file.url).subscribe(image => {
-        const name = file.file.name;
+        const name = file.file.name.replace(/\.[^/.]+$/, "");
         const existingIndex = this.luts.findIndex(lut => lut.name === name);
         const newLut = {
           name,
@@ -51,8 +58,11 @@ export class AppComponent implements OnInit {
           this.luts[existingIndex] = newLut;
         }
 
+        this.luts.sort((a, b) => a.name < b.name ? -1 : 1);
+
         if (i === 0) {
           this.lutData = getImageData(image);
+          this.lutName = name;
         }
       });
     });

@@ -1,6 +1,15 @@
-<app-image-processor *ngIf="imageData && lutData" [imageData]="imageData" [lut]="lutData"></app-image-processor>
+<div class="image-preview">
+  <div class="image-preview-side">
+    <app-image-processor *ngIf="imageData" [highQuality]="true" [imageData]="imageData"></app-image-processor>
+    Before
+  </div>
+  <div class="image-preview-side">
+    <app-image-processor *ngIf="imageData && lutData" [highQuality]="true" [imageData]="imageData" [lut]="lutData"></app-image-processor>
+    After {{lutName}}
+  </div>
+</div>
 
-<app-lut-selector [luts]="luts" (lutSelected)="lutData = $event.data"></app-lut-selector>
+<app-lut-selector [image]="imageData" [luts]="luts" (lutSelected)="lutData = $event.data"></app-lut-selector>
 
 <app-image-drop (files)="imagesDropped($event)">Drop an image to preview</app-image-drop>
 <app-image-drop (files)="lutsDropped($event)">Drop one or more LUTs</app-image-drop>
