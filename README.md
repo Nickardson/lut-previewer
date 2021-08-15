@@ -1,5 +1,21 @@
 # LutPreviewer
 
+## LUT Formats
+
+### HaldCLUT
+
+```bash
+# 12-level sRGB HaldCLUT
+magick convert hald:12 -depth 16 -colorspace sRGB "Hald Identity 12 level 16 bit.png"
+# 12-level RGB HaldCLUT
+magick convert hald:12 -depth 8 -colorspace RGB "Hald Identity 12 level 8 bit.png"
+
+# 8-level sRGB HaldCLUT
+magick convert hald:8 -depth 16 -colorspace sRGB "Hald Identity 8 level 16 bit.png"
+# 8-level RGB HaldCLUT
+magick convert hald:8 -depth 8 -colorspace RGB "Hald Identity 8 level 8 bit.png"
+```
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.1.1.
 
 ## Development server

@@ -94,6 +94,10 @@ export function mapColorsFast(out: ImageData, image: ImageData, clut: ImageData,
   let rm: number, gm: number, bm: number;
   let columns: number, rows: number;
 
+  // Reshade/OBS LUTs have green on the bottom.
+  // Some LUTs have green on the top? Is that an industry standard?
+  let greenOnTop = false;
+
   // console.log('My best guess at the clut type:', findRepeatingPatterns(clut));
 
   if (clut.width === clut.height) {
@@ -104,6 +108,9 @@ export function mapColorsFast(out: ImageData, image: ImageData, clut: ImageData,
     columns = clut.width / blockWidth;
     rows = clut.height / blockHeight;
 
+    // As per http://www.quelsolaar.com/technology/clut.html
+    // Scanline method, where a nested loop over (blue, green, red)
+    // means that each red value is written, then each green, then each blue
     rm = 1, gm = blockWidth, bm = blockWidth * columns * blockHeight;
   } else {
     // Assume a flat list?
@@ -137,7 +144,7 @@ export function mapColorsFast(out: ImageData, image: ImageData, clut: ImageData,
     for (var x = 0; x < w; x++) {
       let i = (y * w + x) * 4,
         r = inputData[i] / 255 * cs1,
-        g = inputData[i + 1] / 255 * cs1,
+        g = (greenOnTop ? 255 - inputData[i + 1] : inputData[i + 1]) / 255 * cs1,
         b = inputData[i + 2] / 255 * cs1,
         a = inputData[i + 3] / 255,
         // r is on the x axis because moving right within a block makes it more red.   Advance by 1 per r
@@ -350,4 +357,17 @@ function download(url: string, name: string) {
       a.remove();
     }, 100);
   }, 100);
+}
+
+export type LutType = 'unknown' | 'hald' | 'unwrapped' | 'grid';
+
+export function getLutType(lut: ImageData): LutType {
+  if (lut.width === lut.height) {
+    // TODO: may be grid
+    return 'hald';
+  } else if (lut.height * lut.height === lut.width) {
+    return 'unwrapped';
+  } else {
+    return 'unknown';
+  }
 }

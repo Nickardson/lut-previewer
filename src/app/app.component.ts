@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { FileHandle } from './image-drop/image-drop.component';
-import { downloadCanvas, getImageData, loadImage, scaleImage, scaleImageHQ } from './image-processing';
+import { downloadCanvas, getImageData, getLutType, loadImage, scaleImage, scaleImageHQ } from './image-processing';
 import { LutDefinition } from './lut-selector/lut-selector.component';
 
 @Component({
@@ -29,14 +29,19 @@ export class AppComponent implements OnInit {
 
   showOriginal = false;
 
+  identityLutName = 'Reshade Identity 32';
+
   ngOnInit(): void {
     loadImage('assets/lenna2.png').subscribe(image => {
       this.imageName = 'Lenna';
       this.setImage(image);
     });
 
+    this.addLut('assets/luts/32/' + this.identityLutName + '.png', this.identityLutName, 'unwrapped');
+    this.addLut('assets/luts/hald/Hald Identity 8 level 8 bit.png', 'Hald Identity 8 level 8 bit', 'hald');
+    this.addLut('assets/luts/hald/Hald Identity 8 level 16 bit.png', 'Hald Identity 8 level 16 bit', 'hald');
+
     const lutNamesUnwrapped = [
-      'Unchanged',
       // https://www.on1.com/free/luts/
       'Cinematic 01',
       'Cinematic 02',
@@ -76,6 +81,7 @@ export class AppComponent implements OnInit {
 
     loadImage(url).subscribe(lut => {
       const data = getImageData(lut);
+      const type = getLutType(data);
 
       const newLut = { data, name, type };
 
@@ -160,7 +166,8 @@ export class AppComponent implements OnInit {
   }
 
   clearLuts(): void {
-    this.luts = this.luts.filter(lut => lut.name === 'Unchanged');
+    // this.luts = this.luts.filter(lut => lut.name === this.identityLutName);
+    this.luts = this.luts.slice(0, 3);
   }
 
   getLutMaxWidth(): string | undefined {
