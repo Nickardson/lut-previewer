@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { FileHandle } from './image-drop/image-drop.component';
-import { getImageData, loadImage, scaleImage, scaleImageHQ } from './image-processing';
+import { downloadCanvas, getImageData, loadImage, scaleImage, scaleImageHQ } from './image-processing';
 import { LutDefinition } from './lut-selector/lut-selector.component';
 
 @Component({
@@ -20,13 +20,16 @@ export class AppComponent implements OnInit {
    * Imagedata as used by LUT previews
    */
   imageDataSmall?: ImageData;
+  imageName?: string;
+
   lutData?: ImageData;
   lutName?: string;
 
   luts: LutDefinition[] = [];
 
   ngOnInit(): void {
-    loadImage('assets/lenna.png').subscribe(image => {
+    loadImage('assets/lenna2.png').subscribe(image => {
+      this.imageName = 'Lenna';
       this.setImage(image);
     });
 
@@ -69,6 +72,7 @@ export class AppComponent implements OnInit {
   imagesDropped(files: FileHandle[]) {
     // TODO: multiple images
     loadImage(files[0].url).subscribe(image => {
+      this.imageName = files[0].file.name.replace(/\.[^/.]+$/, "");
       this.setImage(image);
     });
   }

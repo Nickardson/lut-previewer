@@ -214,3 +214,62 @@ export function scaleImageHQ(image: HTMLImageElement, w: number, h: number) {
   }
   return scaleImage(finalImage, w, h);
 }
+
+let downloadUrl: string,
+  supportsDownload = document.createElement('a').download !== undefined;
+
+/**
+ * Download a canvas
+ * @param canvas Canvas to save
+ * @param type MIME type, ie image/png
+ * @param quality Quality from 0 to 1 if jpg
+ * @param name Filename
+ * @returns Promise
+ */
+export function downloadCanvas(canvas: HTMLCanvasElement, type: string, quality: number, name: string) {
+  return new Promise<string | void>((resolve, reject) => {
+    if (canvas.toBlob) {
+      canvas.toBlob((blob) => {
+        if (downloadUrl) URL.revokeObjectURL(downloadUrl);
+
+        if (navigator.msSaveBlob) {
+          navigator.msSaveBlob(blob, name);
+          resolve();
+        }
+        else {
+          downloadUrl = URL.createObjectURL(blob);
+          if (supportsDownload) {
+            download(downloadUrl, name);
+            resolve();
+          }
+          else {
+            resolve(downloadUrl);
+          }
+        }
+
+      }, type, quality);
+    }
+    else {
+      var url = canvas.toDataURL(type, quality);
+      download(url, name);
+      resolve();
+    }
+  });
+}
+
+function download(url: string, name: string) {
+  const a = document.createElement('a');
+  a.download = name || 'photo.jpg';
+  a.href = url;
+  a.target = '_blank';
+  a.innerText = 'download';
+  document.querySelector('body')?.appendChild(a);
+
+  // firefox seems to need these timeouts
+  window.setTimeout(() => {
+    a.click();
+    window.setTimeout(() => {
+      a.remove();
+    }, 100);
+  }, 100);
+}

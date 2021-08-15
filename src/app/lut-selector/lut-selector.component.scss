@@ -10,19 +10,20 @@
   padding: 0.5em;
 
   flex-basis: 50%;
-  max-width: 50%;
+  max-width: calc(min(15em, 50%));
 }
 
 @media only screen and (min-width: 600px) {
   .lut {
     flex-basis: 33%;
-    max-width: 33%;
+    max-width: calc(min(15em, 33%));
   }
 }
+
 @media only screen and (min-width: 1200px) {
   .lut {
     flex-basis: 20%;
-    max-width: 15em;
+    max-width: calc(min(15em, 20%));
   }
 }
 

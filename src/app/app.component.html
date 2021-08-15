@@ -6,13 +6,23 @@
         Before
       </div> -->
       <div class="image-preview-side">
-        <app-image-processor *ngIf="imageData" [requireLut]="true" [highQuality]="true" [imageData]="imageData"
-          [lut]="lutData"></app-image-processor>
-        {{lutName || 'After'}}
+        <app-image-processor #main [requireLut]="true" [highQuality]="true" [imageData]="imageData" [lut]="lutData">
+        </app-image-processor>
+        <app-image-processor #lut [style.max-width]="(imageData?.width ? imageData!.width + 'px' : undefined)"
+          [requireLut]="false" [highQuality]="true" [imageData]="lutData"></app-image-processor>
+
+        <div class="lut-bar">
+          <span class="lut-name">{{lutName || 'After'}}</span>
+          <span class="lut-actions">
+            <a href="#" (click)="main.save((imageName || 'image') + '-' + (lutName || 'lut'), 'png')">Save .png</a>
+            <a href="#" (click)="main.save((imageName || 'image') + '-' + (lutName || 'lut'), 'jpg')">Save .jpg</a>
+            <a href="#" (click)="lut.save(lutName || 'lut', 'png')">Save LUT</a>
+          </span>
+        </div>
+
+        <h2 *ngIf="imageName === 'Lenna'" class="drop-prompt">Drag-and-drop an image to preview here.</h2>
       </div>
     </div>
-
-    <!-- <h2 class="drop-prompt">Drag-and-drop an image to preview here.</h2> -->
   </app-image-drop>
 
   <app-image-drop (files)="lutsDropped($event)" class="app-luts">

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { mapColors, mapColorsFast } from '../image-processing';
+import { downloadCanvas, mapColors, mapColorsFast } from '../image-processing';
 
 @Component({
   selector: 'app-image-processor',
@@ -9,7 +9,7 @@ import { mapColors, mapColorsFast } from '../image-processing';
 export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input()
-  imageData!: ImageData;
+  imageData?: ImageData;
 
   @Input()
   lut?: ImageData;
@@ -36,7 +36,7 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
   }
 
   render(): void {
-    if (!this.canvas) {
+    if (!this.canvas || !this.imageData) {
       // console.warn('Not loaded yet');
       return;
     }
@@ -67,5 +67,12 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
 
   ngOnChanges(_changes: SimpleChanges): void {
     this.render();
+  }
+
+  save(name: string, type: 'png' | 'jpg') {
+    if (this.imageData && this.canvas) {
+      const mime = type === 'png' ? 'image/png' : 'image/jpeg';
+      downloadCanvas(this.canvas.nativeElement, mime, 1, name + '.' + type);
+    }
   }
 }
