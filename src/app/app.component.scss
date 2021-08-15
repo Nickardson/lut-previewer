@@ -55,21 +55,6 @@ input {
   flex-shrink: 0;
 }
 
-@media only screen and (min-width: 800px) {
-  .app-container {
-    flex-direction: row;
-  }
-
-  .app-preview {
-    width: 50vw;
-  }
-
-  .app-luts {
-    // overflow-y: auto;
-    // height: 100%;
-  }
-}
-
 a {
   color: #6bc2ff;
   text-decoration: none;
@@ -82,6 +67,7 @@ a:hover {
 
 .lut-bar {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -103,4 +89,23 @@ a:hover {
 
 .lut-name {
   line-height: 48px;
+}
+
+@media only screen and (min-width: 800px) {
+  .app-container {
+    flex-direction: row;
+  }
+
+  .app-preview {
+    width: 50vw;
+  }
+
+  .app-luts {
+    // overflow-y: auto;
+    // height: 100%;
+  }
+
+  .lut-bar {
+    flex-direction: row;
+  }
 }
