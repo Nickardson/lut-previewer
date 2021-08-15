@@ -189,3 +189,28 @@ export function getImageData(img: HTMLImageElement): ImageData {
   ctx.drawImage(img, 0, 0, w, h);
   return ctx.getImageData(0, 0, w, h);
 }
+
+export function scaleImage(img: CanvasImageSource, w: number, h: number) {
+  let c = document.createElement('canvas'),
+    ctx = c.getContext('2d');
+
+  if (!ctx) {
+    throw new Error('Could not load image data because canvas could not be created');
+  }
+
+  c.width = w;
+  c.height = h;
+  ctx.drawImage(img, 0, 0, w, h);
+  return c;
+}
+
+// results in a much smoother image
+export function scaleImageHQ(image: HTMLImageElement, w: number, h: number) {
+  let iw = ((image as HTMLImageElement).naturalWidth || image.width),
+    ih = ((image as HTMLImageElement).naturalHeight || image.height);
+  let finalImage: CanvasImageSource = image;
+  if (iw > w * 2 && ih > h * 2) {
+    finalImage = scaleImage(image, w * 2, h * 2);
+  }
+  return scaleImage(finalImage, w, h);
+}

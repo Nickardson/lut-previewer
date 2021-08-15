@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { FileHandle } from './image-drop/image-drop.component';
-import { getImageData, loadImage } from './image-processing';
+import { getImageData, loadImage, scaleImage, scaleImageHQ } from './image-processing';
 import { LutDefinition } from './lut-selector/lut-selector.component';
 
 @Component({
@@ -12,14 +12,23 @@ import { LutDefinition } from './lut-selector/lut-selector.component';
 export class AppComponent implements OnInit {
   title = 'lut-previewer';
 
+  /**
+   * Full imagedata for preview pane
+   */
   imageData?: ImageData;
+  /**
+   * Imagedata as used by LUT previews
+   */
+  imageDataSmall?: ImageData;
   lutData?: ImageData;
   lutName?: string;
 
   luts: LutDefinition[] = [];
 
   ngOnInit(): void {
-    loadImage('assets/lenna.png').subscribe(image => this.imageData = getImageData(image));
+    loadImage('assets/lenna.png').subscribe(image => {
+      this.setImage(image);
+    });
 
     const lutNames = [
       'Cinematic 01',
@@ -53,8 +62,21 @@ export class AppComponent implements OnInit {
   imagesDropped(files: FileHandle[]) {
     // TODO: multiple images
     loadImage(files[0].url).subscribe(image => {
-      this.imageData = getImageData(image);
+      this.setImage(image);
     });
+  }
+
+  setImage(image: HTMLImageElement): void {
+    this.imageData = getImageData(image);
+
+    const maxSize = 256;
+    // Determine the multiplier to get down to the max size
+    const w = this.imageData.width;
+    const h = this.imageData.height;
+    const ratio = Math.min(1, Math.min(maxSize / w, maxSize / h));
+    const scaledW = Math.floor(w * ratio);
+    const scaledH = Math.floor(h * ratio);
+    this.imageDataSmall = scaleImageHQ(image, scaledW, scaledH).getContext('2d')?.getImageData(0, 0, scaledW, scaledH);
   }
 
   lutsDropped(files: FileHandle[]) {
