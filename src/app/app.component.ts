@@ -99,6 +99,28 @@ export class AppComponent implements OnInit {
     });
   }
 
+  imagesSelected(files: FileList) {
+    const filesHandles: FileHandle[] = this.filesListToFileHandles(files);
+    this.imagesDropped(filesHandles);
+  }
+
+  lutsSelected(files: FileList) {
+    const filesHandles: FileHandle[] = this.filesListToFileHandles(files);
+    this.lutsDropped(filesHandles);
+  }
+
+  private filesListToFileHandles(files: FileList) {
+    const filesHandles: FileHandle[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files.item(i)!;
+      filesHandles.push({
+        url: window.URL.createObjectURL(file),
+        file: file,
+      });
+    }
+    return filesHandles;
+  }
+
   imagesDropped(files: FileHandle[]) {
     // TODO: multiple images?
     loadImage(files[0].url).subscribe(image => {

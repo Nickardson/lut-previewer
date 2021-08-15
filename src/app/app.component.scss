@@ -7,7 +7,6 @@
 }
 
 .drop-prompt {
-  text-align: center;
   background: #212121;
   box-shadow: 0px 4px 8px #00000038;
   display: inline-block;
@@ -20,9 +19,12 @@
 //   max-width: 50vh;
 // }
 
+input {
+  margin-top: 1em;
+}
+
 .image-preview-side {
   padding: 1em;
-  text-align: center;
 
   position: sticky;
   top: 1em;
