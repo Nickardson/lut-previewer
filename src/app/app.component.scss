@@ -1,8 +1,64 @@
 .image-preview {
   display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 1em 0;
+  height: 100%;
+  box-sizing: border-box;
 }
 
-app-image-processor {
-  max-width: 50vh;
+.drop-prompt {
+  text-align: center;
+  background: gray;
+  display: inline-block;
+  padding: 1em 2em;
+  border-radius: 1em;
+}
+
+// app-image-processor {
+//   max-width: 50vh;
+// }
+
+.image-preview-side {
+  padding: 1em;
+}
+
+// .image-preview-container {
+//   position: sticky;
+//   top: 0;
+//   display: block;
+// }
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-preview {
+  // flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-luts {
+  flex-basis: 30em;
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
+@media only screen and (min-width: 600px) {
+  .app-container {
+    flex-direction: row;
+  }
+
+  .app-preview {
+    min-width: 50vw;
+  }
+
+  .app-luts {
+    overflow-y: auto;
+    height: 100%;
+  }
 }

@@ -1,6 +1,6 @@
 <div class="luts">
   <div class="lut" *ngFor="let lut of luts" (click)="lutSelected.emit(lut)">
     <app-image-processor *ngIf="image" [imageData]="image" [lut]="lut.data" [highQuality]="false"></app-image-processor>
-    {{lut.name}}
+    <div class="lut-name" [attr.title]="lut.name">{{lut.name}}</div>
   </div>
 </div>

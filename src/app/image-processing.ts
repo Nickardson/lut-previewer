@@ -42,14 +42,6 @@ export function mapColorsFast(out: ImageData, image: ImageData, clut: ImageData,
     // TODO: is this generic for non-hald?
     cs1 = blockWidth - 1;
 
-  console.debug(`Color mapping:`, {
-    blockWidth,
-    blockHeight,
-    columns,
-    rows,
-    blockPixelsCount,
-  });
-
   // Is there a deterministic way of seeing what size the LUT is?
   // cube root of (width * height) tells the dimension size of the lut
   //   1024x32 luts are 32 size

@@ -17,6 +17,12 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
   @Input()
   highQuality = false;
 
+  /**
+   * Require a lut present in order to render anything other than black
+   */
+  @Input()
+  requireLut = false;
+
   @ViewChild('canvas')
   canvas?: ElementRef<HTMLCanvasElement>;
 
@@ -48,7 +54,12 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
       out = ctx.createImageData(data.width, data.height);
       map(out, data, this.lut, 1.0);
     } else {
-      out = data;
+      if (this.requireLut) {
+        out = ctx.createImageData(data.width, data.height);
+        out.data.fill(128);
+      } else {
+        out = data;
+      }
     }
 
     ctx.putImageData(out, 0, 0);

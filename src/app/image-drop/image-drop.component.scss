@@ -1,9 +1,15 @@
+// .image-drop {
+//   border: 2px solid grey;
+//   border-radius: 2em;
+//   padding: 2em;
+// }
+
 .image-drop {
-  border: 2px solid grey;
-  border-radius: 2em;
-  padding: 2em;
+  width: 100%;
+  height: 100%;
 }
 
 .image-drop--dropping {
-  background: gray;
+  // background: gray;
+  opacity: 0.5;
 }

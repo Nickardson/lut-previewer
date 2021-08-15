@@ -19,19 +19,34 @@ export class AppComponent implements OnInit {
   luts: LutDefinition[] = [];
 
   ngOnInit(): void {
-    const oImg = loadImage('assets/lenna.png');
-    const lutName = 'Cinematic 01';
-    const oLut = loadImage('assets/luts/32/' + lutName + '.png');
-    // const oLut = loadImage('assets/luts/instant_consumer-1252696f.png');
+    loadImage('assets/lenna.png').subscribe(image => this.imageData = getImageData(image));
 
-    forkJoin([oImg, oLut]).subscribe(([image, lut]) => {
-      this.imageData = getImageData(image);
-      this.lutData = getImageData(lut);
+    const lutNames = [
+      'Cinematic 01',
+      'Cinematic 02',
+      'Cinematic 03',
+      'Cinematic 04',
+      'Cinematic 05',
+      'Cinematic 06',
+      'Cinematic 07',
+      'Cinematic 08',
+      'Cinematic 09',
+      'Cinematic 10',
+    ];
+    lutNames.forEach(lutName => this.addLut('assets/luts/32/' + lutName + '.png', lutName));
+  }
 
-      this.luts = [
-        { data: this.lutData, name: lutName },
-      ];
-      this.lutName = lutName;
+  addLut(url: string, name: string) {
+    loadImage(url).subscribe(lut => {
+      const data = getImageData(lut);
+
+      const newLut = { data, name };
+      this.luts.push(newLut);
+
+      // Set the lut if none has been loaded
+      if (!this.lutData) {
+        this.lutSelected(newLut);
+      }
     });
   }
 
@@ -58,13 +73,17 @@ export class AppComponent implements OnInit {
           this.luts[existingIndex] = newLut;
         }
 
-        this.luts.sort((a, b) => a.name < b.name ? -1 : 1);
+        // this.luts.sort((a, b) => a.name < b.name ? -1 : 1);
 
         if (i === 0) {
-          this.lutData = getImageData(image);
-          this.lutName = name;
+          this.lutSelected(newLut);
         }
       });
     });
+  }
+
+  lutSelected(lut: LutDefinition): void {
+    this.lutData = lut.data;
+    this.lutName = lut.name;
   }
 }
