@@ -59,7 +59,7 @@
       <input type="file" multiple (change)="lutsSelected($any($event.target).files)" accept="image/*" />
     </h2>
     <br />
-    <a *ngIf="luts.length > 1" href="#" (click)="clearLuts()">Clear LUT list</a>
+    <a *ngIf="luts.length > 3" href="#" (click)="clearLuts()">Clear LUT list</a>
   </app-image-drop>
 </div>
 
