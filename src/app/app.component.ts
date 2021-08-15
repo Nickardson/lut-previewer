@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
     });
 
     const lutNames = [
+      'Unchanged',
       'Cinematic 01',
       'Cinematic 02',
       'Cinematic 03',
@@ -50,7 +51,13 @@ export class AppComponent implements OnInit {
       const data = getImageData(lut);
 
       const newLut = { data, name };
-      this.luts.push(newLut);
+
+      const existingIndex = this.luts.findIndex(lut => lut.name === name);
+      if (existingIndex === -1) {
+        this.luts.push(newLut);
+      } else {
+        this.luts[existingIndex] = newLut;
+      }
 
       // Set the lut if none has been loaded
       if (!this.lutData) {
@@ -76,31 +83,17 @@ export class AppComponent implements OnInit {
     const ratio = Math.min(1, Math.min(maxSize / w, maxSize / h));
     const scaledW = Math.floor(w * ratio);
     const scaledH = Math.floor(h * ratio);
-    this.imageDataSmall = scaleImageHQ(image, scaledW, scaledH).getContext('2d')?.getImageData(0, 0, scaledW, scaledH);
+
+    if (scaledW !== w || scaledH !== h) {
+      this.imageDataSmall = scaleImageHQ(image, scaledW, scaledH).getContext('2d')?.getImageData(0, 0, scaledW, scaledH);
+    } else {
+      this.imageDataSmall = this.imageData;
+    }
   }
 
   lutsDropped(files: FileHandle[]) {
     files.forEach((file, i) => {
-      loadImage(file.url).subscribe(image => {
-        const name = file.file.name.replace(/\.[^/.]+$/, "");
-        const existingIndex = this.luts.findIndex(lut => lut.name === name);
-        const newLut = {
-          name,
-          data: getImageData(image),
-        };
-
-        if (existingIndex === -1) {
-          this.luts.push(newLut);
-        } else {
-          this.luts[existingIndex] = newLut;
-        }
-
-        // this.luts.sort((a, b) => a.name < b.name ? -1 : 1);
-
-        if (i === 0) {
-          this.lutSelected(newLut);
-        }
-      });
+      this.addLut(file.url, file.file.name.replace(/\.[^/.]+$/, ""));
     });
   }
 
