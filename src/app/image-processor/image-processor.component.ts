@@ -23,8 +23,13 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
   @Input()
   requireLut = false;
 
+  @Input()
+  showOriginal = false;
+
   @ViewChild('canvas')
   canvas?: ElementRef<HTMLCanvasElement>;
+
+  imageWithLutCache?: ImageData;
 
   constructor() { }
 
@@ -41,24 +46,32 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
       return;
     }
 
-    const data: ImageData = this.imageData;
-    this.canvas.nativeElement.width = data.width;
-    this.canvas.nativeElement.height = data.height;
+    this.canvas.nativeElement.width = this.imageData.width;
+    this.canvas.nativeElement.height = this.imageData.height;
 
     const ctx = this.canvas.nativeElement.getContext('2d')!;
     // const map = this.highQuality ? mapColors : mapColorsFast;
     const map = mapColorsFast;
     let out: ImageData;
 
-    if (this.lut) {
-      out = ctx.createImageData(data.width, data.height);
-      map(out, data, this.lut, 1.0);
+    if (this.showOriginal) {
+      out = this.imageData;
     } else {
-      if (this.requireLut) {
-        out = ctx.createImageData(data.width, data.height);
-        out.data.fill(128);
+      if (this.lut) {
+        if (!this.imageWithLutCache) {
+          out = ctx.createImageData(this.imageData.width, this.imageData.height);
+          map(out, this.imageData, this.lut, 1.0);
+          this.imageWithLutCache = out;
+        } else {
+          out = this.imageWithLutCache;
+        }
       } else {
-        out = data;
+        if (this.requireLut) {
+          out = ctx.createImageData(this.imageData.width, this.imageData.height);
+          out.data.fill(128);
+        } else {
+          out = this.imageData;
+        }
       }
     }
 
@@ -66,6 +79,11 @@ export class ImageProcessorComponent implements OnInit, AfterViewInit, OnChanges
   }
 
   ngOnChanges(_changes: SimpleChanges): void {
+    // When anything that goes into rendering changes, clear the cache
+    if (_changes.lut || _changes.imageData || _changes.highQuality) {
+      this.imageWithLutCache = undefined;
+    }
+
     this.render();
   }
 

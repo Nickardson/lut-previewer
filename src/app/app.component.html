@@ -6,8 +6,8 @@
         Before
       </div> -->
       <div class="image-preview-side">
-        <app-image-processor #main [highQuality]="true" [imageData]="imageData"
-          [lut]="showOriginal ? undefined : lutData">
+        <app-image-processor #main [highQuality]="true" [imageData]="imageData" [showOriginal]="showOriginal"
+          [lut]="lutData">
         </app-image-processor>
         <app-image-processor #lut [style.max-width]="getLutMaxWidth()"
           [style.display]="lutData && lutData.height < lutData.width ? 'inherit' : 'none'" [requireLut]="false"
