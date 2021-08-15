@@ -26,4 +26,5 @@ export class LutSelectorComponent implements OnInit {
 export interface LutDefinition {
   name: string;
   data: ImageData;
+  type: string;
 }

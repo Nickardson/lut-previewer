@@ -68,13 +68,12 @@
   }
 }
 
-.lut-actions a {
+a {
   color: #6bc2ff;
-  margin-left: 2em;
   text-decoration: none;
 }
 
-.lut-actions a:hover {
+a:hover {
   color: #3199e4;
   text-decoration: none;
 }
@@ -82,4 +81,8 @@
 .lut-bar {
   display: flex;
   justify-content: space-between;
+}
+
+.lut-actions a {
+  margin-left: 2em;
 }

@@ -33,8 +33,9 @@ export class AppComponent implements OnInit {
       this.setImage(image);
     });
 
-    const lutNames = [
+    const lutNamesUnwrapped = [
       'Unchanged',
+      // https://www.on1.com/free/luts/
       'Cinematic 01',
       'Cinematic 02',
       'Cinematic 03',
@@ -46,14 +47,19 @@ export class AppComponent implements OnInit {
       'Cinematic 09',
       'Cinematic 10',
     ];
-    lutNames.forEach(lutName => this.addLut('assets/luts/32/' + lutName + '.png', lutName));
+    const lutNamesHald = [
+      // https://obsproject.com/forum/resources/free-lut-filter-pack.594/
+      'Infrared',
+    ]
+    lutNamesUnwrapped.forEach(lutName => this.addLut('assets/luts/32/' + lutName + '.png', lutName, 'unwrapped'));
+    lutNamesHald.forEach(lutName => this.addLut('assets/luts/hald/' + lutName + '.png', lutName, 'hald'));
   }
 
-  addLut(url: string, name: string) {
+  addLut(url: string, name: string, type: string) {
     loadImage(url).subscribe(lut => {
       const data = getImageData(lut);
 
-      const newLut = { data, name };
+      const newLut = { data, name, type };
 
       const existingIndex = this.luts.findIndex(lut => lut.name === name);
       if (existingIndex === -1) {
@@ -97,12 +103,16 @@ export class AppComponent implements OnInit {
 
   lutsDropped(files: FileHandle[]) {
     files.forEach((file, i) => {
-      this.addLut(file.url, file.file.name.replace(/\.[^/.]+$/, ""));
+      this.addLut(file.url, file.file.name.replace(/\.[^/.]+$/, ""), 'unknown');
     });
   }
 
   lutSelected(lut: LutDefinition): void {
     this.lutData = lut.data;
     this.lutName = lut.name;
+  }
+
+  clearLuts(): void {
+    this.luts = this.luts.filter(lut => lut.name === 'Unchanged');
   }
 }

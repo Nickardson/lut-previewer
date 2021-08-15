@@ -29,5 +29,9 @@
     <app-lut-selector [image]="imageDataSmall" [luts]="luts" (lutSelected)="lutSelected($event)"></app-lut-selector>
 
     <h2 class="drop-prompt">Drag-and-drop .png file LUTs to preview here.</h2>
+    <br/>
+    <a *ngIf="luts.length > 1" href="#" (click)="clearLuts()">Clear LUT list</a>
   </app-image-drop>
 </div>
+
+<!-- TODO: credit sources -->

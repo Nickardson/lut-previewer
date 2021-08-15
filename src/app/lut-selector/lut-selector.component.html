@@ -1,6 +1,19 @@
 <div class="luts">
   <div class="lut" *ngFor="let lut of luts" (click)="lutSelected.emit(lut)">
     <app-image-processor *ngIf="image" [imageData]="image" [lut]="lut.data" [highQuality]="false"></app-image-processor>
-    <div class="lut-name" [attr.title]="lut.name">{{lut.name}}</div>
+    <div class="lut-name">
+      <!-- <svg title="Hald CLUT" *ngIf="lut.type === 'hald'" style="width:24px;height:24px" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M9,7V17H11V13H13V17H15V7H13V11H11V7H9Z" />
+      </svg>
+      <svg title="Unwrapped Cube" *ngIf="lut.type === 'unwrapped'" style="width:24px;height:24px" viewBox="0 0 24 24">
+        <path fill="currentColor"
+          d="M22,14A2,2 0 0,1 20,16H4A2,2 0 0,1 2,14V10A2,2 0 0,1 4,8H20A2,2 0 0,1 22,10V14M4,14H8V10H4V14M10,14H14V10H10V14M16,14H20V10H16V14Z" />
+      </svg>
+      <svg title="Grid" *ngIf="lut.type === 'grid'" style="width:24px;height:24px" viewBox="0 0 24 24">
+        <path fill="currentColor"
+          d="M16,20H20V16H16M16,14H20V10H16M10,8H14V4H10M16,8H20V4H16M10,14H14V10H10M4,14H8V10H4M4,20H8V16H4M10,20H14V16H10M4,8H8V4H4V8Z" />
+      </svg> -->
+      <span [attr.title]="lut.name">{{lut.name}}</span>
+    </div>
   </div>
 </div>
