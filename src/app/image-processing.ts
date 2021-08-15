@@ -1,5 +1,80 @@
 import { Observable } from "rxjs";
 
+// /**
+//  * Determines the most likely format for the LUT based on how colors start repeating.
+//  * Should work decently for all but the most wild LUTs
+//  * @param clut CLUT to analyze
+//  * @returns Detected block size
+//  */
+// function findRepeatingPatterns(clut: ImageData): { width: number, height: number } {
+//   return {
+//     width: findRepeatingPattern(clut, false),
+//     height: findRepeatingPattern(clut, true),
+//   }
+// }
+
+// /**
+//  * Detects block repeat for one axis
+//  * @param clut CLUT to analyze
+//  * @param vertical Whether to search vertically, otherwise horizontally
+//  * @returns Detected block size
+//  */
+// function findRepeatingPattern(clut: ImageData, vertical: boolean): number {
+//   const offsetBase = vertical ? clut.width : 1;
+//   const sideLength = vertical ? clut.height : clut.width;
+
+//   let lowestSpan = 0;
+//   // let lowestDistance = Number.MAX_SAFE_INTEGER;
+//   // for (let span = 16; span <= sideLength; span *= 2) {
+//   //   const aStart = 0;
+//   //   const bStart = offsetBase * span;
+
+//   //   const a = clut.data.subarray(aStart, aStart + span * 4);
+//   //   const b = clut.data.subarray(bStart, bStart + span * 4);
+//   //   const distance = sequenceAverageDistance(a, b);
+//   //   if (distance < lowestDistance) {
+//   //     lowestDistance = distance;
+//   //     lowestSpan = span;
+//   //   }
+//   // }
+
+//   let lowestSlope = Number.MAX_SAFE_INTEGER;
+//   for (let span = 16; span <= sideLength; span *= 2) {
+//     const a = clut.data.subarray(0, span * 4);
+//     const distance = sequenceAverageSlope(a);
+//     if (distance < lowestSlope) {
+//       lowestSlope = distance;
+//       lowestSpan = span;
+//     }
+//   }
+
+//   return lowestSpan;
+// }
+
+// function sequenceAverageSlope(a: number[] | Uint8ClampedArray): number {
+//   let totalSlope = 0;
+//   for (let i = 1; i < a.length; i++) {
+//     totalSlope += Math.abs(a[i - 1] - a[i]);
+//   }
+//   return totalSlope / a.length;
+// }
+
+// /**
+//  * Determines the average difference between each item at the same position in two arrays
+//  * @param a List of nums
+//  * @param b List of nums
+//  * @returns The average difference between each item
+//  */
+// function sequenceAverageDistance(a: number[] | Uint8ClampedArray, b: number[] | Uint8ClampedArray): number {
+//   if (a.length !== b.length) {
+//     throw new Error('Expected arrays to be same size');
+//   }
+
+//   let distance = 0;
+//   a.forEach((v, i) => distance += Math.abs(v - b[i]));
+//   return distance / a.length;
+// }
+
 /**
  * Applies a LUT
  * @param out Image which will have the result written to
@@ -18,6 +93,9 @@ export function mapColorsFast(out: ImageData, image: ImageData, clut: ImageData,
   let blockWidth: number, blockHeight: number;
   let rm: number, gm: number, bm: number;
   let columns: number, rows: number;
+
+  // console.log('My best guess at the clut type:', findRepeatingPatterns(clut));
+
   if (clut.width === clut.height) {
     // Handle Hald CLUT
     blockHeight = Math.floor(Math.pow(clut.width, 1 / 3) + 0.001); // ie 8 for a 512x512
