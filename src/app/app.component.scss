@@ -83,6 +83,22 @@ a:hover {
   justify-content: space-between;
 }
 
+.show-original,
 .lut-actions a {
-  margin-left: 2em;
+  margin-left: 1em;
+}
+
+.show-original {
+  vertical-align: -1.1em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.show-original--useless {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.lut-name {
+  line-height: 48px;
 }

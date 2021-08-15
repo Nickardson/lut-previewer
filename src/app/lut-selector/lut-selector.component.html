@@ -1,6 +1,6 @@
 <div class="luts">
   <div class="lut" *ngFor="let lut of luts" (click)="lutSelected.emit(lut)">
-    <app-image-processor *ngIf="image" [imageData]="image" [lut]="lut.data" [highQuality]="false"></app-image-processor>
+    <app-image-processor *ngIf="image" [requireLut]="true" [imageData]="image" [lut]="lut.data" [highQuality]="false"></app-image-processor>
     <div class="lut-name">
       <!-- <svg title="Hald CLUT" *ngIf="lut.type === 'hald'" style="width:24px;height:24px" viewBox="0 0 24 24">
         <path fill="currentColor" d="M9,7V17H11V13H13V17H15V7H13V11H11V7H9Z" />

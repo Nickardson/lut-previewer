@@ -27,6 +27,8 @@ export class AppComponent implements OnInit {
 
   luts: LutDefinition[] = [];
 
+  showOriginal = false;
+
   ngOnInit(): void {
     loadImage('assets/lenna2.png').subscribe(image => {
       this.imageName = 'Lenna';
@@ -39,15 +41,23 @@ export class AppComponent implements OnInit {
       'Cinematic 01',
       'Cinematic 02',
       'Cinematic 03',
-      'Cinematic 04',
-      'Cinematic 05',
-      'Cinematic 06',
-      'Cinematic 07',
-      'Cinematic 08',
-      'Cinematic 09',
-      'Cinematic 10',
+      'Portrait 01',
+      'Portrait 02',
+      'Portrait 03',
     ];
     const lutNamesHald = [
+      // https://gmic.eu/color_presets/
+      'Polaroid 669',
+      'Polaroid 669 +',
+      'Polaroid 690',
+      'Polaroid 690 +',
+      // https://blog.sowerby.me/fuji-film-simulation-profiles/
+      'Fuji XTrans III - Pro Neg Std',
+      'Fuji XTrans III - Sepia',
+      'Fuji XTrans III - Acros',
+      'Fuji XTrans III - Acros+R',
+      'Fuji XTrans III - Acros+G',
+      'Fuji XTrans III - Acros+Ye',
       // https://obsproject.com/forum/resources/free-lut-filter-pack.594/
       'Infrared',
     ]
@@ -56,27 +66,41 @@ export class AppComponent implements OnInit {
   }
 
   addLut(url: string, name: string, type: string) {
+    const existingIndex = this.luts.findIndex(lut => lut.name === name);
+    // Add a placeholder
+    if (existingIndex === -1) {
+      this.luts.push({
+        name, type, data: undefined
+      });
+    }
+
     loadImage(url).subscribe(lut => {
       const data = getImageData(lut);
 
       const newLut = { data, name, type };
 
+      // Recalculate as the index may have changed
       const existingIndex = this.luts.findIndex(lut => lut.name === name);
       if (existingIndex === -1) {
+        // In case it got cleared out
         this.luts.push(newLut);
       } else {
         this.luts[existingIndex] = newLut;
       }
 
-      // Set the lut if none has been loaded
-      if (!this.lutData) {
-        this.lutSelected(newLut);
-      }
+      // // Set the lut if none has been loaded
+      // if (!this.lutData) {
+      //   this.lutSelected(newLut);
+      // }
+    }, (err) => {
+      const existingIndex = this.luts.findIndex(lut => lut.name === name);
+      this.luts.splice(existingIndex, 1);
+      console.error(err);
     });
   }
 
   imagesDropped(files: FileHandle[]) {
-    // TODO: multiple images
+    // TODO: multiple images?
     loadImage(files[0].url).subscribe(image => {
       this.imageName = files[0].file.name.replace(/\.[^/.]+$/, "");
       this.setImage(image);
@@ -102,6 +126,7 @@ export class AppComponent implements OnInit {
   }
 
   lutsDropped(files: FileHandle[]) {
+    files.sort((a, b) => a.file.name < b.file.name ? -1 : 1);
     files.forEach((file, i) => {
       this.addLut(file.url, file.file.name.replace(/\.[^/.]+$/, ""), 'unknown');
     });
@@ -114,5 +139,17 @@ export class AppComponent implements OnInit {
 
   clearLuts(): void {
     this.luts = this.luts.filter(lut => lut.name === 'Unchanged');
+  }
+
+  getLutMaxWidth(): string | undefined {
+    if (this.imageData?.width) {
+      if (this.lutData && this.lutData.height === this.lutData.width) {
+        return '128px';
+      } else {
+        return this.imageData!.width + 'px';
+      }
+    } else {
+      return undefined;
+    }
   }
 }
